@@ -1,5 +1,5 @@
-define(["jquery", "./cell_renderer", "./map_knowledge", "./options", "./tileinfo-dngn", "./util", "./view_data", "./enums"],
-function ($, cr, map_knowledge, options, dngn, util, view_data, enums) {
+define(["jquery", "./cell_renderer", "./map_knowledge", "./options", "./tileinfo-dngn", "./util", "./view_data", "./enums", "./gamepad"],
+function ($, cr, map_knowledge, options, dngn, util, view_data, enums, gamepad) {
     "use strict";
     var global_anim_counter = 0;
 
@@ -70,6 +70,13 @@ function ($, cr, map_knowledge, options, dngn, util, view_data, enums) {
                 .on("mousemove mouseleave mousedown", function (ev) {
                     renderer.handle_mouse(ev);
                 })
+
+            // vvvvvvv this is bad coupling vvvvvvvv
+            gamepad(
+                ()    => { return {x:renderer.view_center.x, y:renderer.view_center.y}}, // get_viewcenter()=>{x,y}
+                (x,y) => { view_data.place_cursor(enums.CURSOR_MOUSE, {x,y}) }           // place_cursor(x,y)
+            ) 
+            // ^^^^^^^ that is bad coupling ^^^^^^^
 
             cr.DungeonCellRenderer.prototype.init.call(this, element);
         },
